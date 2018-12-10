@@ -83,18 +83,14 @@ import { ButtonClose } from '@/components/Button'
 import { TransactionModal } from '@/components/Transaction'
 import TableWrapper from '@/components/utils/TableWrapper'
 import { orderBy } from 'lodash'
-
 export default {
   name: 'WalletDelegates',
-
   inject: ['walletVote'],
-
   components: {
     ButtonClose,
     TableWrapper,
     TransactionModal
   },
-
   data: () => ({
     currentPage: 1,
     delegates: [],
@@ -111,7 +107,6 @@ export default {
       }
     }
   }),
-
   computed: {
     columns () {
       return [
@@ -148,27 +143,22 @@ export default {
       return 'https://docs.ark.io/cookbook/usage-guides/how-to-vote-in-the-ark-desktop-wallet.html'
     }
   },
-
   mounted () {
     this.queryParams.limit = this.session_network.constants.activeDelegates || 51 // Set default limit to amount of active delegates
     this.fetchDelegates()
   },
-
   methods: {
     dismissExplanation () {
       this.$store.dispatch('app/setVotingExplanation', false)
     },
-
     getVoteTitle () {
       if (this.selected.publicKey === this.walletVote.publicKey) {
         return this.$t('WALLET_DELEGATES.UNVOTE_DELEGATE', { delegate: this.selected.username })
       }
       return this.$t('WALLET_DELEGATES.VOTE_DELEGATE', { delegate: this.selected.username })
     },
-
     async fetchDelegates () {
       if (this.isLoading) return
-
       try {
         this.isLoading = true
         const { delegates, totalCount } = await this.$client.fetchDelegates({
@@ -188,60 +178,49 @@ export default {
         this.isLoading = false
       }
     },
-
     formatPercentage (value) {
       return this.formatter_percentage(value)
     },
-
     onRowClick ({ row }) {
       this.selected = row
     },
-
     onSent () {
       this.walletVote.publicKey = null
       this.selected = null
     },
-
     onCancel () {
       this.selected = null
     },
-
     onPageChange ({ currentPage }) {
       this.currentPage = currentPage
       this.__updateParams({ page: currentPage })
       this.fetchDelegates()
     },
-
     onPerPageChange ({ currentPerPage }) {
       this.__updateParams({ limit: currentPerPage, page: 1 })
       this.fetchDelegates()
     },
-
-    onSortChange ({ columnIndex, sortType }) {
-      if (this.columns[columnIndex]) {
-        const columnName = this.columns[columnIndex].field
-        this.__updateParams({
-          sort: {
-            type: sortType,
-            field: columnName
-          },
-          page: 1
-        })
-        this.fetchDelegates()
-      }
+    onSortChange (ctx) {
+      const columnName = ctx[0].field
+      const sortType = ctx[0].type
+      this.__updateParams({
+        sort: {
+          type: sortType,
+          field: columnName
+        },
+        page: 1
+      })
+      this.fetchDelegates()
     },
-
     reset () {
       this.currentPage = 1
       this.queryParams.page = 1
       this.totalCount = 0
       this.delegates = []
     },
-
     __sortDelegates (delegates = this.delegates) {
       return orderBy(delegates, [this.queryParams.sort.field], [this.queryParams.sort.type])
     },
-
     __updateParams (newProps) {
       this.queryParams = Object.assign({}, this.queryParams, newProps)
     }
