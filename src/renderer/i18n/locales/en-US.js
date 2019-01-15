@@ -256,6 +256,10 @@ export default {
     },
     LABEL: 'Amount'
   },
+  
+  VENDORFIELD: {
+    LIMIT_REACHED: 'You can enter maximum \'{0}\' charachters only'
+  },
 
   INPUT_FEE: {
     MINIMUM: 'Minimum',
